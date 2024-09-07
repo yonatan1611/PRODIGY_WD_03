@@ -3,12 +3,11 @@ const titleHeader = document.querySelector('#titleHeader')
 const xPlayerDisplay = document.querySelector('#xPlayerDisplay')
 const oPlayerDisplay = document.querySelector('#oPlayerDisplay')
 const restartBtn = document.querySelector('#restartBtn')
-const modeSelector = document.querySelector('#modeSelector')
 
 let player = 'X'
+let humanPlayer = 'X' 
 let isPauseGame = false
 let isGameStart = false
-let isAiMode = true
 
 const inputCells = ['', '', '',
                     '', '', '',
@@ -31,8 +30,8 @@ function tapCell(cell, index) {
 
         if (!checkWinner()) {
             changePlayer()
-            if (isAiMode && player === 'O') {
-                randomPick()
+            if (player !== humanPlayer) {
+                randomPick() 
             }
         }
     }
@@ -58,7 +57,6 @@ function randomPick() {
         } while (inputCells[randomIndex] != '')
 
         updateCell(cells[randomIndex], randomIndex)
-
         if (!checkWinner()) {
             changePlayer()
             isPauseGame = false
@@ -68,14 +66,12 @@ function randomPick() {
 
 function checkWinner() {
     for (const [a, b, c] of winConditions) {
-        if (inputCells[a] == player &&
-            inputCells[b] == player &&
-            inputCells[c] == player) {
+        if (inputCells[a] == player && inputCells[b] == player && inputCells[c] == player) {
             declareWinner([a, b, c])
             return true
         }
     }
-
+    
     if (inputCells.every(cell => cell != '')) {
         declareDraw()
         return true
@@ -83,7 +79,7 @@ function checkWinner() {
 }
 
 function declareWinner(winningIndices) {
-    titleHeader.textContent = `${player} Wins!`
+    titleHeader.textContent = `${player} Wins`
     isPauseGame = true
 
     winningIndices.forEach((index) =>
@@ -101,13 +97,15 @@ function declareDraw() {
 
 function choosePlayer(selectedPlayer) {
     if (!isGameStart) {
-        player = selectedPlayer
-        if (player == 'X') {
+        humanPlayer = selectedPlayer
+        player = 'X' 
+        if (humanPlayer === 'X') {
             xPlayerDisplay.classList.add('player-active')
             oPlayerDisplay.classList.remove('player-active')
         } else {
             xPlayerDisplay.classList.remove('player-active')
             oPlayerDisplay.classList.add('player-active')
+            randomPick() 
         }
     }
 }
@@ -122,9 +120,4 @@ restartBtn.addEventListener('click', () => {
     isPauseGame = false
     isGameStart = false
     titleHeader.textContent = 'Choose'
-})
-
-modeSelector.addEventListener('change', (e) => {
-    isAiMode = (e.target.value === 'ai')
-    restartBtn.click()
 })
